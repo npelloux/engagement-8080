@@ -8,7 +8,7 @@ prédictibilité cible (80 % par défaut) avec un niveau de confiance donné
 Le résultat est une estimation probabiliste fondée sur l'historique, jamais une
 garantie.
 
-Un outil open source d'[AELWorks](https://aelworks.fr).
+Un outil open source d'[AELWorks](http://aelworks.fr).
 
 ## Utilisation
 
@@ -40,4 +40,4 @@ Node 18 ou plus récent, sans dépendance.
 
 ## Licence
 
-[MIT](LICENSE) © 2026 [AELWorks](https://aelworks.fr)
+[MIT](LICENSE) © 2026 [AELWorks](http://aelworks.fr)

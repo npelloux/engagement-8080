@@ -1,5 +1,6 @@
 <meta charset="utf-8">
 <title>Engagement 80/80</title>
+<link rel="icon" type="image/png" href="aelworks-logo.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
 /* Mise en page : la décision en tête, puis saisie et paramètres côte à côte, puis les trois vues pleine largeur. */
@@ -40,6 +41,11 @@ h1{font-size:28px;font-weight:600;letter-spacing:-.01em;line-height:1.2;margin:0
 h2{font-size:17px;font-weight:600;margin:0;text-wrap:balance}
 p{margin:0}
 .lede{margin-top:6px;color:var(--ink-2);max-width:68ch}
+.tete{display:flex;gap:20px;justify-content:space-between;align-items:flex-start}
+.tete>div{min-width:0}
+/* Le logo est noir sur transparent : une pastille blanche le garde lisible en thème sombre. */
+.logo{flex:none;display:block;background:#fff;border:1px solid var(--border);border-radius:10px;padding:5px;line-height:0}
+.logo img{display:block;width:56px;height:56px}
 .panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
 .sub{color:var(--ink-2);font-size:14px;max-width:75ch}
 .duo{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:20px;align-items:start}
@@ -145,6 +151,7 @@ path.z1{fill:var(--z1)} path.z2{fill:var(--z2)} path.z3{fill:var(--z3)} path.z4{
   .stat.hero{grid-column:1/-1}
   .stat{padding-inline:0 16px;border-left:0}
   .stat.hero .value{font-size:48px}
+  .logo img{width:44px;height:44px}
   .panel{padding:16px}
   .curseur{grid-template-columns:minmax(0,1fr) 84px}
   .curseur label,.curseur output{grid-column:1/-1}
@@ -152,9 +159,12 @@ path.z1{fill:var(--z1)} path.z2{fill:var(--z2)} path.z3{fill:var(--z3)} path.z4{
 </style>
 
 <main class="page">
-  <header>
-    <h1>Engagement 80/80</h1>
-    <p class="lede">Saisissez l'historique trimestriel d'une équipe. L'outil estime combien de Features engager au prochain trimestre pour tenir la prédictibilité visée avec le niveau de confiance voulu. C'est une estimation fondée sur le passé, pas une garantie.</p>
+  <header class="tete">
+    <div>
+      <h1>Engagement 80/80</h1>
+      <p class="lede">Saisissez l'historique trimestriel d'une équipe. L'outil estime combien de Features engager au prochain trimestre pour tenir la prédictibilité visée avec le niveau de confiance voulu. C'est une estimation fondée sur le passé, pas une garantie.</p>
+    </div>
+    <a class="logo" href="http://aelworks.fr" target="_blank" rel="noopener" title="AELWorks"><img src="aelworks-logo.png" alt="AELWorks" width="56" height="56"></a>
   </header>
 
   <section class="panel" aria-live="polite">
@@ -308,7 +318,7 @@ path.z1{fill:var(--z1)} path.z2{fill:var(--z2)} path.z3{fill:var(--z3)} path.z4{
   </div>
 
   <footer class="credit">
-    <span>Un outil open source d'<a href="https://aelworks.fr" target="_blank" rel="noopener">AELWorks</a></span>
+    <span>Un outil open source d'<a href="http://aelworks.fr" target="_blank" rel="noopener">AELWorks</a></span>
     <a href="https://github.com/npelloux/engagement-8080" target="_blank" rel="noopener">Code source, licence MIT</a>
   </footer>
 </main>
