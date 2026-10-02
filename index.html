@@ -1,0 +1,908 @@
+<meta charset="utf-8">
+<title>Engagement 80/80</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Mise en page : la décision en tête, puis saisie et paramètres côte à côte, puis les trois vues pleine largeur. */
+:root{
+  --bg:#f3f5f8; --surface:#fcfcfb; --field:#ffffff;
+  --ink:#0b0b0b; --ink-2:#52514e; --muted:#6f6d68;
+  --grid:#e1e0d9; --axis:#c3c2b7; --ref:#898781; --border:rgba(11,11,11,.10);
+  --s1:#2a78d6; --s2:#eb6834; --objectif:#0a8a0a;
+  --z1:#1a7f37; --z2:#7fcf8a; --z3:#f2c230; --z4:#f08a3c; --z5:#d03b3b; --z-op:.6;
+  --accent:#1c5cab; --error:#b42318; --alerte:#fdf3d7; --alerte-forte:#fde4e1;
+  --font:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d0d0d; --surface:#1a1a19; --field:#121212;
+    --ink:#ffffff; --ink-2:#c3c2b7; --muted:#9a988f;
+    --grid:#2c2c2a; --axis:#44443f; --ref:#898781; --border:rgba(255,255,255,.10);
+    --s1:#3987e5; --s2:#d95926; --objectif:#2ea043;
+    --z1:#2ea043; --z2:#7fcf8a; --z3:#e3b341; --z4:#e8833a; --z5:#e5534b; --z-op:.55;
+    --accent:#6da7ec; --error:#f97066; --alerte:#3a3215; --alerte-forte:#42211e;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d0d0d; --surface:#1a1a19; --field:#121212;
+  --ink:#ffffff; --ink-2:#c3c2b7; --muted:#9a988f;
+  --grid:#2c2c2a; --axis:#44443f; --ref:#898781; --border:rgba(255,255,255,.10);
+  --s1:#3987e5; --s2:#d95926; --objectif:#2ea043;
+  --z1:#2ea043; --z2:#7fcf8a; --z3:#e3b341; --z4:#e8833a; --z5:#e5534b; --z-op:.55;
+  --accent:#6da7ec; --error:#f97066; --alerte:#3a3215; --alerte-forte:#42211e;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.5}
+.page{max-width:1120px;margin-inline:auto;padding-inline:20px;padding-block:32px 56px;display:flex;flex-direction:column;gap:20px}
+h1{font-size:28px;font-weight:600;letter-spacing:-.01em;line-height:1.2;margin:0;text-wrap:balance}
+h2{font-size:17px;font-weight:600;margin:0;text-wrap:balance}
+p{margin:0}
+.lede{margin-top:6px;color:var(--ink-2);max-width:68ch}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.sub{color:var(--ink-2);font-size:14px;max-width:75ch}
+.duo{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:20px;align-items:start}
+
+input[type="text"],select,textarea{font:inherit;color:var(--ink);background:var(--field);border:1px solid var(--axis);border-radius:6px;padding:7px 10px;min-width:0}
+input[type="text"]{font-family:var(--mono);font-size:15px;width:100%}
+input[aria-invalid="true"]{border-color:var(--error)}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input[type="checkbox"],input[type="radio"],input[type="range"]{accent-color:var(--accent)}
+button{font:inherit;font-size:13px;font-weight:500;color:var(--ink);background:transparent;border:1px solid var(--axis);border-radius:6px;padding:6px 12px;cursor:pointer}
+button:hover{background:var(--grid)}
+.row{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}
+.hint{font-size:12.5px;color:var(--muted)}
+.err{font-size:13px;color:var(--error);font-weight:500}
+
+/* Synthèse */
+.summary{display:grid;grid-template-columns:minmax(0,1.5fr) repeat(3,minmax(0,1fr));gap:0}
+.stat{display:flex;flex-direction:column;gap:4px;padding-inline:20px;border-left:1px solid var(--grid);min-width:0}
+.stat.hero{padding-left:0;border-left:0}
+.stat .label{font-size:13px;color:var(--ink-2);font-weight:500}
+.stat .value{font-size:28px;font-weight:600;line-height:1.15}
+.stat.hero .value{font-size:56px;line-height:1}
+.stat .value small{font-size:.45em;font-weight:500;color:var(--ink-2);margin-left:.3em}
+.stat.hero .value small{font-size:.36em}
+.stat .note{font-size:13px;color:var(--ink-2)}
+.pill{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;font-size:12.5px;font-weight:500;color:var(--ink-2);border:1px solid var(--border);border-radius:999px;padding:1px 10px 1px 8px;white-space:nowrap}
+.sw{display:inline-block;flex:none;width:11px;height:11px;border-radius:3px}
+.sw.z1{background:var(--z1)} .sw.z2{background:var(--z2)} .sw.z3{background:var(--z3)} .sw.z4{background:var(--z4)} .sw.z5{background:var(--z5)}
+
+/* Avertissements */
+.avis{display:flex;flex-direction:column;gap:8px;list-style:none;margin:0;padding:0;font-size:14px}
+.avis li{padding:8px 12px;border-radius:6px;background:var(--alerte);color:var(--ink)}
+.avis li.fort{background:var(--alerte-forte);font-weight:500}
+.avis li.hyp{background:transparent;padding:0;color:var(--ink-2)}
+.avis b{font-weight:600}
+
+/* Tableau de saisie */
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+table.saisie{width:100%;min-width:430px}
+.saisie th{font-weight:500;color:var(--ink-2);text-align:left;padding:0 6px 6px 0;white-space:nowrap}
+.saisie td{padding:3px 6px 3px 0;vertical-align:middle}
+.saisie td.c,.saisie th.c{text-align:center;width:1%}
+.saisie input[type="text"]{padding:5px 8px;font-size:14px}
+.saisie .del{padding:2px 9px;border-color:transparent;color:var(--muted);font-size:16px;line-height:1.2}
+details.plus summary{cursor:pointer;font-size:13.5px;color:var(--ink-2);width:fit-content}
+details.plus[open] summary{margin-bottom:10px}
+textarea{font-family:var(--mono);font-size:12.5px;width:100%;min-height:150px;resize:vertical}
+.io{display:flex;flex-direction:column;gap:10px}
+
+/* Paramètres */
+.params{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px 16px}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field.large{grid-column:1/-1}
+.field label,.field .lab{font-weight:500;font-size:13.5px}
+.field select{width:100%}
+.unit{display:flex;align-items:center;gap:6px}
+.unit span{color:var(--muted);font-size:13.5px}
+.choix{display:flex;flex-direction:column;gap:6px;font-size:14px}
+.choix label{display:flex;align-items:center;gap:8px;font-weight:400;flex-wrap:wrap}
+.choix input[type="text"]{width:64px;padding:3px 8px}
+
+/* Graphiques */
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:13px;color:var(--ink-2)}
+.legend span{display:inline-flex;align-items:center;gap:7px}
+.legend svg{flex:none}
+.curseur{display:grid;grid-template-columns:auto minmax(120px,1fr) 84px auto;gap:10px 14px;align-items:center;font-size:14px}
+.curseur label{font-weight:500}
+.curseur input[type="range"]{width:100%;min-width:0}
+.curseur output{display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap;color:var(--ink-2)}
+.curseur output b{color:var(--ink);font-weight:600}
+.chart{position:relative;min-width:0;touch-action:pan-y}
+.chart svg{display:block;width:100%;height:auto;font-family:var(--font)}
+.chart.pick svg{cursor:crosshair}
+.vide{color:var(--muted);font-size:14px;padding:28px 0;text-align:center}
+.tip{position:absolute;pointer-events:none;z-index:2;background:var(--ink);color:var(--surface);font-size:12.5px;line-height:1.5;padding:6px 10px;border-radius:6px;white-space:nowrap}
+.g-grid{stroke:var(--grid);stroke-width:1}
+.g-base{stroke:var(--axis);stroke-width:1}
+.g-ref{stroke:var(--ref);stroke-width:1}
+.g-cible{stroke:var(--ink);stroke-width:1.5}
+.g-tick{fill:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}
+.g-title{fill:var(--ink-2);font-size:12.5px;font-weight:500}
+.g-label{fill:var(--ink);font-size:12.5px;font-weight:600}
+.g-note{fill:var(--ink-2);font-size:12px}
+.g-line{fill:none;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.g-dot{stroke:var(--surface);stroke-width:2}
+.g-xhair{stroke:var(--ref);stroke-width:1}
+.c-ink{stroke:var(--ink)} .c-s1{stroke:var(--s1)} .c-s2{stroke:var(--s2)} .c-gris{stroke:var(--ref)} .c-obj{stroke:var(--objectif)}
+.f-ink{fill:var(--ink)} .f-s1{fill:var(--s1)} .f-s2{fill:var(--s2)} .f-surface{fill:var(--surface)}
+.dots{stroke-dasharray:2 5}
+.tirets{stroke-dasharray:6 5}
+path.z1,path.z2,path.z3,path.z4,path.z5{fill-opacity:var(--z-op)}
+path.z1{fill:var(--z1)} path.z2{fill:var(--z2)} path.z3{fill:var(--z3)} path.z4{fill:var(--z4)} path.z5{fill:var(--z5)}
+.method{font-size:13px;color:var(--ink-2);max-width:80ch;display:flex;flex-direction:column;gap:6px}
+
+@media (max-width:860px){
+  .duo{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:720px){
+  .summary{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px 0}
+  .stat.hero{grid-column:1/-1}
+  .stat{padding-inline:0 16px;border-left:0}
+  .stat.hero .value{font-size:48px}
+  .panel{padding:16px}
+  .curseur{grid-template-columns:minmax(0,1fr) 84px}
+  .curseur label,.curseur output{grid-column:1/-1}
+}
+</style>
+
+<main class="page">
+  <header>
+    <h1>Engagement 80/80</h1>
+    <p class="lede">Saisissez l'historique trimestriel d'une équipe. L'outil estime combien de Features engager au prochain trimestre pour tenir la prédictibilité visée avec le niveau de confiance voulu. C'est une estimation fondée sur le passé, pas une garantie.</p>
+  </header>
+
+  <section class="panel" aria-live="polite">
+    <div class="summary">
+      <div class="stat hero">
+        <span class="label" id="l-reco">Engagement à 80/80</span>
+        <span class="value" id="v-reco">–</span>
+        <span class="note" id="n-reco"></span>
+      </div>
+      <div class="stat">
+        <span class="label" id="l-eng">Engagement envisagé</span>
+        <span class="value" id="v-eng">–</span>
+        <span class="pill" id="z-eng" hidden></span>
+      </div>
+      <div class="stat">
+        <span class="label" id="l-fab">Objectif de fabrication</span>
+        <span class="value" id="v-fab">–</span>
+        <span class="pill" id="z-fab" hidden></span>
+      </div>
+      <div class="stat">
+        <span class="label">Historique utilisé</span>
+        <span class="value" id="v-hist">–</span>
+        <span class="note" id="n-hist"></span>
+      </div>
+    </div>
+    <ul class="avis" id="avis"></ul>
+  </section>
+
+  <div class="duo">
+    <section class="panel">
+      <div>
+        <h2>Historique trimestriel</h2>
+        <p class="sub">Deux valeurs sur trois suffisent : la troisième est calculée. Laissez vides les trimestres à venir.</p>
+      </div>
+      <div class="tablewrap">
+        <table class="saisie">
+          <thead><tr>
+            <th class="c" scope="col">Utilisé</th><th scope="col">Trimestre</th><th scope="col">Fabriquées</th>
+            <th scope="col">Engagées</th><th scope="col">Prédictibilité&nbsp;%</th><th scope="col"><span hidden>Supprimer</span></th>
+          </tr></thead>
+          <tbody id="lignes"></tbody>
+        </table>
+      </div>
+      <p class="err" id="table-err" hidden></p>
+      <div class="row">
+        <button type="button" id="b-ajout">Ajouter un trimestre</button>
+        <button type="button" id="b-exemple">Charger l'exemple</button>
+        <button type="button" id="b-vider">Vider le tableau</button>
+        <span class="hint" id="note-exemple">Données d'exemple.</span>
+      </div>
+      <details class="plus">
+        <summary>Importer ou exporter (CSV, JSON)</summary>
+        <div class="io">
+          <div class="row">
+            <label for="io-format">Format</label>
+            <select id="io-format"><option value="csv">CSV</option><option value="json">JSON</option></select>
+            <button type="button" id="io-copier">Copier</button>
+            <button type="button" id="io-charger">Charger ce texte</button>
+            <label for="io-fichier" class="hint">ou un fichier&nbsp;:</label>
+            <input type="file" id="io-fichier" accept=".csv,.json,.txt,text/csv,application/json">
+          </div>
+          <textarea id="io-texte" spellcheck="false" aria-label="Données au format choisi"></textarea>
+          <p class="hint" id="io-msg">Le texte reflète le tableau. Collez ici un CSV ou un JSON puis choisissez «&nbsp;Charger ce texte&nbsp;».</p>
+        </div>
+      </details>
+    </section>
+
+    <section class="panel">
+      <h2>Paramètres</h2>
+      <div class="params">
+        <div class="field">
+          <label for="p-pred">Prédictibilité cible</label>
+          <div class="unit"><input type="text" id="p-pred" inputmode="numeric" autocomplete="off"><span>%</span></div>
+        </div>
+        <div class="field">
+          <label for="p-conf">Confiance cible</label>
+          <div class="unit"><input type="text" id="p-conf" inputmode="numeric" autocomplete="off"><span>%</span></div>
+        </div>
+        <div class="field large">
+          <label for="p-methode">Méthode de calcul</label>
+          <select id="p-methode">
+            <option value="montecarlo">Monte-Carlo / bootstrap</option>
+            <option value="empirical">Empirique</option>
+            <option value="student">Bayésien Student</option>
+          </select>
+          <span class="hint" id="h-methode"></span>
+        </div>
+        <div class="field" id="f-sims">
+          <label for="p-sims">Simulations</label>
+          <input type="text" id="p-sims" inputmode="numeric" autocomplete="off">
+        </div>
+        <div class="field" id="f-graine">
+          <label for="p-graine">Graine aléatoire</label>
+          <input type="text" id="p-graine" inputmode="numeric" autocomplete="off">
+        </div>
+        <div class="field large">
+          <span class="lab" id="lab-hist">Historique utilisé</span>
+          <div class="choix" role="radiogroup" aria-labelledby="lab-hist">
+            <label><input type="radio" name="hist" id="h-all" value="all"> Tous les trimestres</label>
+            <label><input type="radio" name="hist" id="h-last" value="last"> Les <input type="text" id="h-n" inputmode="numeric" aria-label="Nombre de derniers trimestres" autocomplete="off"> derniers trimestres</label>
+            <label><input type="radio" name="hist" id="h-manual" value="manual"> Sélection manuelle (colonne «&nbsp;Utilisé&nbsp;»)</label>
+          </div>
+        </div>
+      </div>
+      <p class="err" id="params-err" hidden></p>
+    </section>
+  </div>
+
+  <section class="panel">
+    <div>
+      <h2>Confiance selon l'engagement</h2>
+      <p class="sub" id="sub-eng"></p>
+    </div>
+    <div class="curseur">
+      <label for="s-eng">Engagement envisagé</label>
+      <input type="range" id="s-eng" step="1">
+      <input type="text" id="n-eng" inputmode="numeric" autocomplete="off" aria-label="Engagement envisagé, en Features">
+      <output id="o-eng" for="s-eng n-eng"></output>
+    </div>
+    <div class="chart pick" id="c-eng"><div class="svg"></div><div class="tip" hidden></div></div>
+    <div class="legend zones"></div>
+  </section>
+
+  <section class="panel">
+    <div>
+      <h2>Confiance selon l'objectif de fabrication</h2>
+      <p class="sub">Probabilité de fabriquer au moins ce nombre de Features au prochain trimestre, quel que soit l'engagement pris.</p>
+    </div>
+    <div class="curseur">
+      <label for="s-fab">Objectif de fabrication</label>
+      <input type="range" id="s-fab" step="1">
+      <input type="text" id="n-fab" inputmode="numeric" autocomplete="off" aria-label="Objectif de fabrication, en Features">
+      <output id="o-fab" for="s-fab n-fab"></output>
+    </div>
+    <div class="chart pick" id="c-fab"><div class="svg"></div><div class="tip" hidden></div></div>
+    <div class="legend zones"></div>
+  </section>
+
+  <section class="panel">
+    <div>
+      <h2>Historique : fabrication, engagement, prédictibilité</h2>
+      <p class="sub" id="sub-hist"></p>
+    </div>
+    <div class="legend" id="lg-hist"></div>
+    <div class="chart" id="c-hist"><div class="svg"></div><div class="tip" hidden></div></div>
+  </section>
+
+  <div class="method">
+    <p><b>Hypothèses.</b> Les trimestres retenus sont supposés représentatifs du système futur, et la capacité de fabrication est supposée indépendante du nombre de Features engagées : la confiance d'un engagement E est la probabilité de fabriquer au moins E × prédictibilité cible.</p>
+    <p><b>Méthodes.</b> Empirique : part des trimestres passés qui auraient suffi, en escalier. Monte-Carlo : tirages avec remise parmi les trimestres observés ; il converge vers l'empirique et ne lisse pas l'escalier. Bayésien Student : loi prédictive continue à partir de la moyenne et de l'écart-type, plus prudente quand l'historique est court. La fourchette bootstrap rééchantillonne l'historique entier pour montrer à quel point l'engagement recommandé dépend des trimestres observés.</p>
+  </div>
+</main>
+
+<script src="moteur.js"></script>
+<script>
+(function(){
+'use strict';
+var M=window.Moteur;
+var $=function(id){return document.getElementById(id);};
+if(!M){$('avis').innerHTML='<li class="fort">Le moteur de calcul (moteur.js) n\'a pas pu être chargé.</li>';return;}
+
+var NB=' ', CLE='engagement-8080:v1';
+var EXEMPLE=[['2024-Q1',105,0.44],['2024-Q2',129,0.48],['2024-Q3',84,0.33],['2024-Q4',142,0.42],['2025-Q1',73,0.40],['2025-Q2',103,0.63],
+  ['2025-Q3',89,0.58],['2025-Q4',126,0.55],['2026-Q1',115,null],['2026-Q2',95,null],['2026-Q3',null,null],['2026-Q4',null,null]];
+var DEFAUT={predTarget:80,confTarget:80,method:'montecarlo',simulations:10000,seed:42,histMode:'all',histN:8};
+var ZONES=[
+  {cls:'z1',label:'Très sûr',range:'plus de 90'+NB+'%'},
+  {cls:'z2',label:'Sûr',range:'80 à 90'+NB+'%'},
+  {cls:'z3',label:'Incertain',range:'50 à 80'+NB+'%'},
+  {cls:'z4',label:'Risqué',range:'25 à 50'+NB+'%'},
+  {cls:'z5',label:'Très risqué',range:'moins de 25'+NB+'%'}
+];
+var SEUILS=[0.9,0.8,0.5,0.25];
+function zoneOf(c){return c>0.9?0:c>=0.8?1:c>=0.5?2:c>=0.25?3:4;}
+
+var nf=new Intl.NumberFormat('fr-FR',{maximumFractionDigits:1});
+var n0=new Intl.NumberFormat('fr-FR',{maximumFractionDigits:0});
+function pct(c){
+  if(c===null||c===undefined||isNaN(c)) return '–';
+  if(c>=1) return '100'+NB+'%';
+  if(c<=0) return '0'+NB+'%';
+  if(c>0.995) return '>'+NB+'99'+NB+'%';
+  if(c<0.005) return '<'+NB+'1'+NB+'%';
+  return Math.round(c*100)+NB+'%';
+}
+function feat(v){return nf.format(v)+NB+'Feature'+(v>=2?'s':'');}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function lireNombre(txt){
+  var s=String(txt).trim().replace('%','').replace(/\s/g,'').replace(',','.');
+  if(s==='') return null;
+  var v=Number(s);
+  return isFinite(v)?v:NaN;
+}
+function niceStep(span,target){
+  var raw=span/target, p=Math.pow(10,Math.floor(Math.log10(raw))), m=raw/p;
+  return (m<=1?1:m<=2?2:m<=5?5:10)*p;
+}
+function f1(v){return v.toFixed(1);}
+
+/* ================= État ================= */
+var state={rows:[],excluded:[],params:Object.assign({},DEFAUT),eng:null,fab:null};
+var calc=null;
+
+function lignesExemple(){
+  return EXEMPLE.map(function(t){return {quarter:t[0],made:t[1],committed:null,predictability:t[2]};});
+}
+function estExemple(){
+  return JSON.stringify(state.rows.map(function(r){return [r.quarter,r.made,r.predictability];}))===JSON.stringify(EXEMPLE) &&
+    state.rows.every(function(r){return r.committed===null;});
+}
+function sauver(){
+  try{localStorage.setItem(CLE,JSON.stringify({rows:state.rows,excluded:state.excluded,params:state.params}));}catch(_){}
+}
+function restaurer(){
+  try{
+    var d=JSON.parse(localStorage.getItem(CLE)||'null');
+    if(d && Array.isArray(d.rows)){
+      state.rows=d.rows.filter(function(r){return r && M.parseQuarter(r.quarter);});
+      state.excluded=Array.isArray(d.excluded)?d.excluded:[];
+      state.params=Object.assign({},DEFAUT,d.params||{});
+      return true;
+    }
+  }catch(_){}
+  return false;
+}
+function ligne(q){return state.rows.filter(function(r){return r.quarter===q;})[0];}
+
+/* ================= Contrôleur : appelle le moteur, ne dessine rien ================= */
+function calculer(){
+  var p=state.params, pred=p.predTarget/100, conf=p.confTarget/100;
+  state.rows=M.sortRows(state.rows);
+  var norm=state.rows.map(function(r){return M.normalizeRow(r);});
+  var sel=p.histMode==='last'?{mode:'last',last:p.histN}:p.histMode==='manual'?{mode:'manual',excluded:state.excluded}:{mode:'all'};
+  var obs=M.selectObservations(norm,sel), n=obs.length;
+  var type=M.methodAvailable(p.method,n)?p.method:'empirical';
+  var method={type:type,simulations:p.simulations,seed:p.seed};
+  calc={norm:norm,obs:obs,n:n,pred:pred,conf:conf,method:method,repli:type!==p.method,diag:M.diagnose(norm,obs),ok:n>0};
+  if(calc.ok){
+    calc.stats=M.stats(obs);
+    calc.reco=M.findMaxCommitment(conf,pred,obs,method);
+    calc.boot=M.bootstrapUncertainty(obs,conf,pred,{seed:p.seed});
+    calc.rangeE=M.suggestRange(obs,method,pred);
+    calc.curveE=M.generateConfidenceCurve(obs,method,pred,{from:calc.rangeE.from,to:calc.rangeE.to,points:260});
+    calc.rangeF=M.suggestRange(obs,method,1);
+    calc.curveF=M.generateConfidenceCurve(obs,method,1,{from:calc.rangeF.from,to:calc.rangeF.to,points:260});
+    calc.confEng=function(E){return M.predictPredictabilityConfidence(E,pred,obs,method);};
+    calc.confFab=function(x){return M.predictDeliveryConfidence(x,obs,method);};
+  }
+  sauver();
+  rendre();
+}
+
+/* ================= Rendu ================= */
+function pastille(el,c){
+  var z=ZONES[zoneOf(c)];
+  el.hidden=false;
+  el.innerHTML='<span class="sw '+z.cls+'"></span>'+z.label;
+}
+function rendre(){
+  if(!calc) return;
+  var p=state.params;
+  $('l-reco').textContent='Engagement à '+p.confTarget+'/'+p.predTarget;
+  $('note-exemple').hidden=!estExemple();
+  $('sub-eng').textContent='Probabilité d\'atteindre au moins '+p.predTarget+NB+'% de prédictibilité au prochain trimestre, selon le nombre de Features engagées.';
+  majParams(); majTable(); majExport(); rendreAvis();
+
+  if(!calc.ok){
+    $('v-reco').textContent='–'; $('n-reco').textContent='Saisissez au moins un trimestre avec ses Features fabriquées.';
+    ['v-eng','v-fab','v-hist'].forEach(function(id){$(id).textContent='–';});
+    $('z-eng').hidden=true; $('z-fab').hidden=true; $('n-hist').textContent='';
+    $('o-eng').textContent=''; $('o-fab').textContent='';
+    confChart($('c-eng'),null); confChart($('c-fab'),null);
+    rendreHistorique();
+    return;
+  }
+  var r=calc.reco, s=calc.stats;
+  var eng=state.eng===null?(r.feasible?r.commitment:Math.round(s.mean/calc.pred)):state.eng;
+  var fab=state.fab===null?Math.round(s.mean):state.fab;
+  var cEng=calc.confEng(eng), cFab=calc.confFab(fab);
+
+  // Synthèse
+  if(r.feasible){
+    $('v-reco').innerHTML=esc(n0.format(r.commitment))+'<small>Feature'+(r.commitment>=2?'s':'')+'</small>';
+    var txt='Confiance ≥'+NB+p.confTarget+NB+'% (estimée à '+pct(r.confidence)+') · Prédictibilité cible ≥'+NB+p.predTarget+NB+'%.';
+    if(calc.boot) txt+=' Fourchette bootstrap à 90'+NB+'% : '+n0.format(calc.boot.low)+' à '+n0.format(calc.boot.high)+'.';
+    $('n-reco').textContent=txt;
+  }else{
+    $('v-reco').textContent='–';
+    $('n-reco').textContent='Aucun engagement ne tient '+p.confTarget+NB+'% de confiance avec cet historique.';
+  }
+  $('l-eng').textContent='Si vous engagez '+feat(eng);
+  $('v-eng').innerHTML=pct(cEng)+'<small>de confiance</small>';
+  pastille($('z-eng'),cEng);
+  $('l-fab').textContent='Fabriquer au moins '+feat(fab);
+  $('v-fab').innerHTML=pct(cFab)+'<small>de confiance</small>';
+  pastille($('z-fab'),cFab);
+  $('v-hist').innerHTML=calc.n+'<small>trimestre'+(calc.n>=2?'s':'')+'</small>';
+  $('n-hist').textContent='Moyenne '+nf.format(s.mean)+' Features, de '+nf.format(s.min)+' à '+nf.format(s.max)+'.';
+
+  // Curseurs
+  majCurseur('eng',calc.rangeE,eng,cEng,'d\'atteindre '+p.predTarget+NB+'% de prédictibilité');
+  majCurseur('fab',calc.rangeF,fab,cFab,'de les fabriquer');
+
+  // Vue 3 : confiance selon l'engagement
+  confChart($('c-eng'),{
+    points:calc.curveE, from:calc.rangeE.from, to:calc.rangeE.to, confTarget:calc.conf,
+    xTitle:'Features engagées au prochain trimestre',
+    aria:'Courbe de confiance selon le nombre de Features engagées',
+    reco:r.feasible?{x:r.commitment,c:r.confidence,text:'Engagement à '+p.confTarget+'/'+p.predTarget+' : '+n0.format(r.commitment)}:null,
+    cursor:{x:eng,c:cEng},
+    lookup:calc.confEng,
+    tip:function(x,c){return 'Engagement : <b>'+esc(feat(x))+'</b><br>Prédictibilité cible : '+p.predTarget+NB+'%<br>Confiance estimée : <b>'+pct(c)+'</b> · '+ZONES[zoneOf(c)].label;},
+    onPick:function(x){state.eng=x; rendre();}
+  });
+  // Vue 2 : confiance selon l'objectif de fabrication
+  confChart($('c-fab'),{
+    points:calc.curveF, from:calc.rangeF.from, to:calc.rangeF.to, confTarget:calc.conf,
+    xTitle:'Features fabriquées au prochain trimestre',
+    aria:'Courbe de confiance selon l\'objectif de fabrication',
+    reco:null, cursor:{x:fab,c:cFab},
+    lookup:calc.confFab,
+    tip:function(x,c){return 'Objectif : <b>'+esc(feat(x))+'</b><br>Confiance estimée : <b>'+pct(c)+'</b> · '+ZONES[zoneOf(c)].label;},
+    onPick:function(x){state.fab=x; rendre();}
+  });
+  rendreHistorique();
+}
+
+function majCurseur(nom,range,val,c,quoi){
+  var s=$('s-'+nom), n=$('n-'+nom);
+  s.min=range.from; s.max=range.to; s.value=Math.max(range.from,Math.min(range.to,val));
+  if(document.activeElement!==n) n.value=val;
+  var z=ZONES[zoneOf(c)];
+  $('o-'+nom).innerHTML='<span><b>'+pct(c)+'</b> de chances '+quoi+'</span><span class="pill"><span class="sw '+z.cls+'"></span>'+z.label+'</span>';
+}
+
+function rendreAvis(){
+  var h='';
+  if(calc.repli) h+='<li class="fort">La méthode Student demande au moins 3 observations : le calcul utilise le mode empirique.</li>';
+  calc.diag.forEach(function(d){h+='<li class="'+(d.level==='fort'?'fort':'')+'">'+esc(d.message)+'</li>';});
+  if(calc.ok && calc.reco.marginal) h+='<li>Le seuil de confiance tombe sur une marche de l\'escalier : en Monte-Carlo, l\'engagement recommandé change selon la graine. Comparez avec les modes empirique et Student, et regardez la fourchette bootstrap.</li>';
+  h+='<li class="hyp">Cette estimation suppose que les trimestres sélectionnés sont représentatifs du système futur.</li>';
+  $('avis').innerHTML=h;
+}
+
+/* ---------- Courbe de confiance (vues 2 et 3) : ne fait que tracer des séries reçues ---------- */
+function confChart(el,cfg){
+  var box=el.querySelector('.svg');
+  el._geo=null;
+  if(!cfg){box.innerHTML='<p class="vide">La courbe apparaîtra dès qu\'un trimestre sera saisi.</p>';return;}
+  var W=Math.max(280,el.clientWidth), H=W<520?290:350;
+  var m={t:34,r:14,b:44,l:50}, pw=W-m.l-m.r, ph=H-m.t-m.b;
+  var x=function(v){return m.l+(v-cfg.from)/(cfg.to-cfg.from)*pw;};
+  var y=function(c){return m.t+(1-c)*ph;};
+
+  // Points enrichis des franchissements de seuils, pour découper l'aire par zone de confiance.
+  var src=cfg.points, pts=[], i;
+  for(i=0;i<src.length;i++){
+    var a=src[i], b=src[i+1];
+    pts.push({x:a.x,c:a.confidence});
+    if(!b) break;
+    SEUILS.forEach(function(T){
+      if(a.confidence>T && b.confidence<T){
+        var k=(a.confidence-T)/(a.confidence-b.confidence);
+        pts.push({x:a.x+k*(b.x-a.x),c:T});
+      }
+    });
+  }
+  var aires='', run=null;
+  function clore(){
+    if(!run) return;
+    var q=run.p;
+    aires+='<path class="'+ZONES[run.z].cls+'" d="M'+q.map(function(o){return f1(x(o.x))+','+f1(y(o.c));}).join('L')+
+      'L'+f1(x(q[q.length-1].x))+','+f1(y(0))+'L'+f1(x(q[0].x))+','+f1(y(0))+'Z"/>';
+    run=null;
+  }
+  for(i=0;i<pts.length-1;i++){
+    var z=zoneOf((pts[i].c+pts[i+1].c)/2);
+    if(!run||run.z!==z){clore(); run={z:z,p:[pts[i]]};}
+    run.p.push(pts[i+1]);
+  }
+  clore();
+
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" role="img" aria-label="'+esc(cfg.aria)+'">';
+  s+=aires;
+  [0,0.25,0.5,0.8,0.9,1].forEach(function(c){
+    s+='<line class="'+(c===0?'g-base':'g-grid')+'" x1="'+m.l+'" x2="'+(W-m.r)+'" y1="'+f1(y(c))+'" y2="'+f1(y(c))+'"/>';
+    s+='<text class="g-tick" x="'+(m.l-8)+'" y="'+f1(y(c)+4)+'" text-anchor="end">'+Math.round(c*100)+NB+'%</text>';
+  });
+  var step=Math.max(1,niceStep(cfg.to-cfg.from,W<520?5:10));
+  for(var t=Math.ceil(cfg.from/step)*step;t<=cfg.to;t+=step){
+    s+='<text class="g-tick" x="'+f1(x(t))+'" y="'+(H-m.b+18)+'" text-anchor="middle">'+n0.format(t)+'</text>';
+  }
+  s+='<text class="g-title" x="'+f1(m.l+pw/2)+'" y="'+(H-6)+'" text-anchor="middle">'+esc(cfg.xTitle)+'</text>';
+  s+='<line class="g-cible" x1="'+m.l+'" x2="'+(W-m.r)+'" y1="'+f1(y(cfg.confTarget))+'" y2="'+f1(y(cfg.confTarget))+'"/>';
+  s+='<text class="g-label" x="'+(W-m.r-2)+'" y="'+f1(y(cfg.confTarget)-6)+'" text-anchor="end">Confiance cible '+Math.round(cfg.confTarget*100)+NB+'%</text>';
+  s+='<path class="g-line c-ink" d="M'+src.map(function(o){return f1(x(o.x))+','+f1(y(o.confidence));}).join('L')+'"/>';
+  var dedans=function(v){return v>=cfg.from && v<=cfg.to;};
+  if(cfg.reco && dedans(cfg.reco.x)){
+    var xr=x(cfg.reco.x), anc=xr<m.l+110?'start':xr>W-m.r-110?'end':'middle';
+    s+='<line class="g-cible" x1="'+f1(xr)+'" x2="'+f1(xr)+'" y1="'+(m.t-8)+'" y2="'+f1(y(0))+'"/>';
+    s+='<text class="g-label" x="'+f1(xr)+'" y="'+(m.t-14)+'" text-anchor="'+anc+'">'+esc(cfg.reco.text)+'</text>';
+    s+='<circle class="g-dot f-ink" cx="'+f1(xr)+'" cy="'+f1(y(cfg.reco.c))+'" r="5"/>';
+  }
+  if(cfg.cursor && dedans(cfg.cursor.x) && !(cfg.reco && cfg.reco.x===cfg.cursor.x)){
+    var xc=x(cfg.cursor.x);
+    s+='<line class="g-cible tirets" x1="'+f1(xc)+'" x2="'+f1(xc)+'" y1="'+m.t+'" y2="'+f1(y(0))+'"/>';
+    s+='<circle class="f-surface c-ink" stroke-width="2" cx="'+f1(xc)+'" cy="'+f1(y(cfg.cursor.c))+'" r="5"/>';
+  }
+  s+='<line class="g-xhair" visibility="hidden" y1="'+m.t+'" y2="'+f1(y(0))+'"/>';
+  s+='<circle class="g-dot f-ink h-dot" visibility="hidden" r="4.5"/>';
+  s+='</svg>';
+  box.innerHTML=s;
+  el._geo={cfg:cfg,m:m,pw:pw,W:W,x:x,y:y};
+}
+
+function placer(tip,cx,cy,W){
+  var w=tip.offsetWidth, h=tip.offsetHeight, left=cx+12;
+  if(left+w>W-4) left=cx-12-w;
+  tip.style.left=Math.max(4,left)+'px';
+  tip.style.top=Math.max(4,cy-h-10)+'px';
+}
+function cacher(el){
+  el.querySelector('.tip').hidden=true;
+  el.querySelectorAll('[visibility]').forEach(function(e){e.setAttribute('visibility','hidden');});
+}
+function brancherConf(el){
+  var tip=el.querySelector('.tip');
+  function valeur(ev,g){
+    var r=el.getBoundingClientRect(), px=(ev.clientX-r.left)*g.W/r.width;
+    var v=Math.round(g.cfg.from+(px-g.m.l)/g.pw*(g.cfg.to-g.cfg.from));
+    return Math.max(g.cfg.from,Math.min(g.cfg.to,v));
+  }
+  el.addEventListener('pointermove',function(ev){
+    var g=el._geo; if(!g) return;
+    var v=valeur(ev,g), c=g.cfg.lookup(v), cx=g.x(v), cy=g.y(c), r=el.getBoundingClientRect(), k=r.width/g.W;
+    var l=el.querySelector('.g-xhair'), d=el.querySelector('.h-dot');
+    l.setAttribute('x1',cx); l.setAttribute('x2',cx); l.setAttribute('visibility','visible');
+    d.setAttribute('cx',cx); d.setAttribute('cy',cy); d.setAttribute('visibility','visible');
+    tip.hidden=false; tip.innerHTML=g.cfg.tip(v,c);
+    placer(tip,cx*k,cy*k,r.width);
+  });
+  el.addEventListener('pointerleave',function(){cacher(el);});
+  el.addEventListener('click',function(ev){
+    var g=el._geo; if(!g) return;
+    g.cfg.onPick(valeur(ev,g));
+  });
+}
+
+/* ---------- Vue 1 : historique trimestriel ---------- */
+function trait(cls,extra){
+  return '<svg width="26" height="12" viewBox="0 0 26 12" aria-hidden="true"><line class="g-line '+cls+'" x1="1" x2="25" y1="6" y2="6"/>'+(extra||'')+'</svg>';
+}
+function croix(cx,cy){
+  return '<path class="g-line c-gris" d="M'+f1(cx-4)+','+f1(cy-4)+'L'+f1(cx+4)+','+f1(cy+4)+'M'+f1(cx-4)+','+f1(cy+4)+'L'+f1(cx+4)+','+f1(cy-4)+'"/>';
+}
+function rendreHistorique(){
+  var el=$('c-hist'), box=el.querySelector('.svg'), rows=calc.norm, pred=calc.pred;
+  el._geo=null;
+  var retenus={}; calc.obs.forEach(function(o){retenus[o.quarter]=true;});
+  var hasE=rows.some(function(r){return r.committed!==null;}), hasP=rows.some(function(r){return r.predictability!==null;});
+  $('sub-hist').textContent=hasE
+    ? 'La courbe orange pointillée vaut '+state.params.predTarget+NB+'% de l\'engagement de chaque trimestre passé. C\'est un repère historique, pas l\'engagement recommandé ci-dessus.'
+    : 'Ajoutez les Features engagées ou la prédictibilité pour comparer la fabrication à l\'engagement.';
+  $('lg-hist').innerHTML='<span>'+trait('c-s1','<circle class="f-s1" cx="13" cy="6" r="3.5"/>')+'Features fabriquées</span>'+
+    (hasE?'<span>'+trait('c-s2','<circle class="f-s2" cx="13" cy="6" r="3.5"/>')+'Features engagées</span>'+
+      '<span>'+trait('c-s2 dots')+state.params.predTarget+NB+'% de l\'engagement passé</span>':'')+
+    (hasP?'<span>'+trait('c-gris dots',croix(13,6))+'Prédictibilité (axe de droite)</span>'+
+      '<span>'+trait('c-obj tirets')+'Prédictibilité cible '+state.params.predTarget+NB+'%</span>':'');
+  if(!rows.length){box.innerHTML='<p class="vide">Aucun trimestre saisi.</p>';return;}
+
+  var W=Math.max(280,el.clientWidth), H=W<520?300:380;
+  var m={t:30,r:hasP?50:14,b:32,l:50}, pw=W-m.l-m.r, ph=H-m.t-m.b, n=rows.length;
+  var max=1; rows.forEach(function(r){max=Math.max(max,r.made||0,r.committed||0);});
+  var st=niceStep(max,5), top=Math.ceil(max/st)*st, K=top;
+  // Alignement des axes : 100 Features à gauche = 100 % à droite (pour les petits volumes, 100 % = haut du graphe).
+  if(hasP && max>=50){top=Math.max(top,100); K=100;}
+  var x=function(i){return m.l+(i+0.5)/n*pw;};
+  var y=function(v){return m.t+(1-v/top)*ph;};
+  var yp=function(p){return y(K*Math.min(1,p));};
+
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="'+W+'" height="'+H+'" role="img" aria-label="Historique trimestriel des Features fabriquées, engagées et de la prédictibilité">';
+  s+='<text class="g-title" x="2" y="14">Features</text>';
+  for(var v=0;v<=top+1e-9;v+=st){
+    s+='<line class="'+(v===0?'g-base':'g-grid')+'" x1="'+m.l+'" x2="'+(W-m.r)+'" y1="'+f1(y(v))+'" y2="'+f1(y(v))+'"/>';
+    s+='<text class="g-tick" x="'+(m.l-8)+'" y="'+f1(y(v)+4)+'" text-anchor="end">'+n0.format(v)+'</text>';
+  }
+  if(hasP){
+    s+='<text class="g-title" x="'+(W-m.r)+'" y="14" text-anchor="start">Préd.</text>';
+    s+='<line class="g-base" x1="'+(W-m.r)+'" x2="'+(W-m.r)+'" y1="'+f1(yp(1))+'" y2="'+f1(y(0))+'"/>';
+    [0,0.2,0.4,0.6,0.8,1].forEach(function(p){
+      if(p>0 && p<1 && K/top*ph*0.2<14) return;
+      s+='<text class="g-tick" x="'+(W-m.r+8)+'" y="'+f1(yp(p)+4)+'">'+Math.round(p*100)+NB+'%</text>';
+    });
+    s+='<line class="g-line c-obj tirets" x1="'+m.l+'" x2="'+(W-m.r)+'" y1="'+f1(yp(pred))+'" y2="'+f1(yp(pred))+'"/>';
+  }
+  var saut=Math.ceil(46/(pw/n));
+  rows.forEach(function(r,i){
+    if(i%saut!==0) return;
+    s+='<text class="g-tick" x="'+f1(x(i))+'" y="'+(H-m.b+18)+'" text-anchor="middle">'+esc(M.quarterLabel(r.quarter))+'</text>';
+  });
+  function ligneDe(get,yf,cls){
+    var d='', leve=true;
+    rows.forEach(function(r,i){
+      var val=get(r);
+      if(val===null){leve=true;return;}
+      d+=(leve?'M':'L')+f1(x(i))+','+f1(yf(val)); leve=false;
+    });
+    return d?'<path class="g-line '+cls+'" d="'+d+'"/>':'';
+  }
+  if(hasP){
+    s+=ligneDe(function(r){return r.predictability;},yp,'c-gris dots');
+    rows.forEach(function(r,i){if(r.predictability!==null) s+=croix(x(i),yp(r.predictability));});
+  }
+  if(hasE){
+    s+=ligneDe(function(r){return r.committed===null?null:r.committed*pred;},y,'c-s2 dots');
+    s+=ligneDe(function(r){return r.committed;},y,'c-s2');
+    rows.forEach(function(r,i){if(r.committed!==null) s+='<circle class="g-dot f-s2" cx="'+f1(x(i))+'" cy="'+f1(y(r.committed))+'" r="4.5"/>';});
+  }
+  s+=ligneDe(function(r){return r.made;},y,'c-s1');
+  rows.forEach(function(r,i){
+    if(r.made===null) return;
+    s+=retenus[r.quarter]
+      ? '<circle class="g-dot f-s1" cx="'+f1(x(i))+'" cy="'+f1(y(r.made))+'" r="4.5"/>'
+      : '<circle class="f-surface c-s1" stroke-width="2" cx="'+f1(x(i))+'" cy="'+f1(y(r.made))+'" r="4.5"/>';
+  });
+  s+='<line class="g-xhair" visibility="hidden" y1="'+m.t+'" y2="'+f1(y(0))+'"/>';
+  s+='</svg>';
+  box.innerHTML=s;
+  el._geo={m:m,pw:pw,W:W,n:n,x:x,y:y,rows:rows,retenus:retenus,pred:pred};
+}
+function brancherHistorique(){
+  var el=$('c-hist'), tip=el.querySelector('.tip');
+  el.addEventListener('pointermove',function(ev){
+    var g=el._geo; if(!g) return;
+    var r=el.getBoundingClientRect(), k=r.width/g.W, px=(ev.clientX-r.left)/k;
+    var i=Math.max(0,Math.min(g.n-1,Math.floor((px-g.m.l)/g.pw*g.n))), row=g.rows[i], cx=g.x(i);
+    var l=el.querySelector('.g-xhair');
+    l.setAttribute('x1',cx); l.setAttribute('x2',cx); l.setAttribute('visibility','visible');
+    var h='<b>'+esc(M.quarterLabel(row.quarter))+'</b>';
+    if(row.made===null && row.committed===null) h+='<br>Pas encore de données';
+    if(row.made!==null) h+='<br>Fabriquées : '+nf.format(row.made)+(g.retenus[row.quarter]?'':' (non retenu pour le calcul)');
+    if(row.committed!==null){
+      h+='<br>Engagées : '+nf.format(row.committed)+(row.derived==='committed'?' (calculé)':'');
+      h+='<br>'+Math.round(g.pred*100)+NB+'% de l\'engagement : '+nf.format(row.committed*g.pred);
+    }
+    if(row.predictability!==null) h+='<br>Prédictibilité : '+Math.round(row.predictability*100)+NB+'%';
+    tip.hidden=false; tip.innerHTML=h;
+    placer(tip,cx*k,g.y(row.made!==null?row.made:0)*k,r.width);
+  });
+  el.addEventListener('pointerleave',function(){cacher(el);});
+}
+
+/* ---------- Tableau de saisie ---------- */
+function aff(v,k){return v===null||v===undefined?'':nf.format(k==='predictability'?v*100:v).replace(/\s/g,'');}
+function rendreTable(){
+  var h='';
+  state.rows.forEach(function(r){
+    var q=r.quarter, lab=M.quarterLabel(q);
+    h+='<tr data-q="'+q+'">'+
+      '<td class="c"><input type="checkbox" id="u-'+q+'" data-k="used" aria-label="Utiliser '+lab+' dans le calcul"></td>'+
+      '<td><input type="text" id="q-'+q+'" data-k="quarter" value="'+lab+'" autocomplete="off" aria-label="Trimestre"></td>'+
+      '<td><input type="text" id="f-'+q+'" data-k="made" value="'+aff(r.made)+'" inputmode="decimal" autocomplete="off" aria-label="Features fabriquées, '+lab+'"></td>'+
+      '<td><input type="text" id="e-'+q+'" data-k="committed" value="'+aff(r.committed)+'" inputmode="decimal" autocomplete="off" aria-label="Features engagées, '+lab+'"></td>'+
+      '<td><input type="text" id="p-'+q+'" data-k="predictability" value="'+aff(r.predictability,'predictability')+'" inputmode="decimal" autocomplete="off" aria-label="Prédictibilité en pourcentage, '+lab+'"></td>'+
+      '<td><button type="button" class="del" data-k="del" aria-label="Supprimer '+lab+'">×</button></td></tr>';
+  });
+  $('lignes').innerHTML=h;
+}
+// Met à jour, sans reconstruire le tableau, les valeurs calculées et l'état des cases « Utilisé ».
+function majTable(){
+  var retenus={}; calc.obs.forEach(function(o){retenus[o.quarter]=true;});
+  var manuel=state.params.histMode==='manual';
+  calc.norm.forEach(function(r){
+    var q=r.quarter, u=$('u-'+q); if(!u) return;
+    var exploitable=r.made!==null;
+    u.checked=!!retenus[q]; u.disabled=!manuel||!exploitable;
+    [['f','made'],['e','committed'],['p','predictability']].forEach(function(c){
+      var inp=$(c[0]+'-'+q);
+      inp.placeholder=r.derived===c[1]?'= '+aff(r[c[1]],c[1]):'';
+      inp.title=r.derived===c[1]?'Valeur calculée à partir des deux autres':'';
+    });
+    var pi=$('p-'+q);
+    if(r.inconsistent){pi.setAttribute('aria-invalid','true'); pi.title='Incohérent avec fabriquées ÷ engagées ('+Math.round(r.made/r.committed*100)+' %)';}
+    else if(pi.title){pi.removeAttribute('aria-invalid'); pi.title='';}
+  });
+}
+function erreurTable(msg){var e=$('table-err'); e.hidden=!msg; e.textContent=msg||'';}
+
+$('lignes').addEventListener('input',function(ev){
+  var t=ev.target, tr=t.closest('tr'), k=t.dataset.k;
+  if(!tr||!k||k==='quarter'||k==='used') return;
+  var v=lireNombre(t.value);
+  if(v!==null && (isNaN(v)||v<0)){t.setAttribute('aria-invalid','true'); erreurTable('Saisissez un nombre positif.'); return;}
+  t.removeAttribute('aria-invalid'); erreurTable('');
+  ligne(tr.dataset.q)[k]=v===null?null:(k==='predictability'?v/100:v);
+  calculer();
+});
+$('lignes').addEventListener('change',function(ev){
+  var t=ev.target, tr=t.closest('tr'), k=t.dataset.k;
+  if(!tr) return;
+  var q=tr.dataset.q;
+  if(k==='used'){
+    state.excluded=state.excluded.filter(function(e){return e!==q;});
+    if(!t.checked) state.excluded.push(q);
+    calculer();
+  }else if(k==='quarter'){
+    var o=M.parseQuarter(t.value);
+    if(!o){t.setAttribute('aria-invalid','true'); erreurTable('Trimestre illisible : écrivez par exemple T1-26 ou 2026-Q1.'); return;}
+    var key=M.quarterKey(o);
+    if(key!==q && ligne(key)){t.setAttribute('aria-invalid','true'); erreurTable(M.quarterLabel(key)+' est déjà dans le tableau.'); return;}
+    erreurTable('');
+    ligne(q).quarter=key;
+    state.excluded=state.excluded.map(function(e){return e===q?key:e;});
+    state.rows=M.sortRows(state.rows);
+    rendreTable(); calculer();
+  }
+});
+$('lignes').addEventListener('click',function(ev){
+  var t=ev.target; if(t.dataset.k!=='del') return;
+  var q=t.closest('tr').dataset.q;
+  state.rows=state.rows.filter(function(r){return r.quarter!==q;});
+  state.excluded=state.excluded.filter(function(e){return e!==q;});
+  rendreTable(); calculer();
+});
+$('b-ajout').addEventListener('click',function(){
+  var q;
+  if(state.rows.length) q=M.nextQuarter(state.rows[state.rows.length-1].quarter);
+  else{var d=new Date(); q=d.getFullYear()+'-Q'+(Math.floor(d.getMonth()/3)+1);}
+  state.rows.push({quarter:q,made:null,committed:null,predictability:null});
+  rendreTable(); calculer();
+  var c=$('f-'+q); if(c) c.focus();
+});
+function remplacer(rows,params){
+  var vus={};
+  rows.forEach(function(r){vus[r.quarter]=r;});
+  state.rows=M.sortRows(Object.keys(vus).map(function(k){return vus[k];}));
+  state.excluded=[]; state.eng=null; state.fab=null;
+  if(params) state.params=validerParams(Object.assign({},state.params,params));
+  erreurTable('');
+  rendreTable(); calculer();
+}
+$('b-exemple').addEventListener('click',function(){remplacer(lignesExemple());});
+$('b-vider').addEventListener('click',function(){remplacer([]);});
+
+/* ---------- Import / export ---------- */
+function majExport(){
+  var ta=$('io-texte');
+  if(document.activeElement===ta) return;
+  ta.value=$('io-format').value==='json'?M.toJSON(state.rows,state.params):M.toCSV(state.rows);
+}
+function message(txt,erreur){var e=$('io-msg'); e.textContent=txt; e.className=erreur?'err':'hint';}
+function importer(txt){
+  var json=/^\s*[\[{]/.test(txt), res=json?M.fromJSON(txt):M.fromCSV(txt);
+  if(!res.rows.length){message(res.errors[0]||'Aucun trimestre lisible dans ce texte.',true); return;}
+  $('io-texte').blur();
+  remplacer(res.rows,json?res.params:null);
+  message(res.rows.length+' trimestres chargés.'+(res.errors.length?' Lignes ignorées : '+res.errors.join(' '):''),res.errors.length>0);
+}
+$('io-format').addEventListener('change',majExport);
+$('io-charger').addEventListener('click',function(){importer($('io-texte').value);});
+$('io-copier').addEventListener('click',function(){
+  var ta=$('io-texte');
+  var repli=function(){ta.focus(); ta.select(); message('Texte sélectionné : copiez-le avec Ctrl+C.');};
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(ta.value).then(function(){message('Copié dans le presse-papiers.');},repli);
+  }else repli();
+});
+$('io-fichier').addEventListener('change',function(ev){
+  var file=ev.target.files[0]; if(!file) return;
+  var fr=new FileReader();
+  fr.onload=function(){importer(String(fr.result));};
+  fr.onerror=function(){message('Le fichier n\'a pas pu être lu.',true);};
+  fr.readAsText(file);
+  ev.target.value='';
+});
+
+/* ---------- Paramètres ---------- */
+function borne(v,min,max,def){v=Math.round(Number(v)); return isFinite(v)?Math.max(min,Math.min(max,v)):def;}
+function validerParams(p){
+  return {
+    predTarget:borne(p.predTarget,1,100,80), confTarget:borne(p.confTarget,1,99,80),
+    method:M.METHODS[p.method]?p.method:'montecarlo',
+    simulations:borne(p.simulations,1000,1000000,10000), seed:borne(p.seed,0,4294967295,42),
+    histMode:['all','last','manual'].indexOf(p.histMode)>=0?p.histMode:'all', histN:borne(p.histN,1,400,8)
+  };
+}
+var CHAMPS={'p-pred':'predTarget','p-conf':'confTarget','p-sims':'simulations','p-graine':'seed','h-n':'histN'};
+function majParams(){
+  var p=state.params;
+  Object.keys(CHAMPS).forEach(function(id){if(document.activeElement!==$(id)) $(id).value=p[CHAMPS[id]];});
+  $('p-methode').value=p.method;
+  $('p-methode').querySelector('[value="student"]').disabled=!M.methodAvailable('student',calc.n);
+  var mc=p.method==='montecarlo';
+  $('f-sims').hidden=!mc; $('f-graine').hidden=!mc;
+  $('h-methode').textContent=p.method==='empirical'?'Fréquences observées, sans hypothèse. Probabilités par pas de 1/n.'
+    :p.method==='student'?'Loi prédictive continue ; au moins 3 observations.'
+    :'Tirages avec remise parmi les trimestres observés.';
+  $('h-'+p.histMode).checked=true;
+}
+function lireParams(){
+  var brut=Object.assign({},state.params), msg='';
+  Object.keys(CHAMPS).forEach(function(id){
+    var v=lireNombre($(id).value);
+    if(v===null||isNaN(v)) return;
+    brut[CHAMPS[id]]=v;
+  });
+  brut.method=$('p-methode').value;
+  var r=document.querySelector('input[name="hist"]:checked'); if(r) brut.histMode=r.value;
+  var p=validerParams(brut);
+  if(brut.simulations<1000) msg='Le nombre de simulations est d\'au moins 1 000.';
+  else if(brut.predTarget<1||brut.predTarget>100) msg='La prédictibilité cible va de 1 à 100 %.';
+  else if(brut.confTarget<1||brut.confTarget>99) msg='La confiance cible va de 1 à 99 %.';
+  $('params-err').hidden=!msg; $('params-err').textContent=msg;
+  state.params=p;
+  calculer();
+}
+['p-pred','p-conf','p-sims','p-graine','h-n'].forEach(function(id){
+  $(id).addEventListener('input',lireParams);
+  $(id).addEventListener('blur',function(){$(id).value=state.params[CHAMPS[id]];});
+});
+$('p-methode').addEventListener('change',lireParams);
+document.querySelectorAll('input[name="hist"]').forEach(function(r){r.addEventListener('change',lireParams);});
+$('h-n').addEventListener('focus',function(){$('h-last').checked=true; lireParams();});
+
+/* ---------- Curseurs ---------- */
+[['eng','eng'],['fab','fab']].forEach(function(c){
+  $('s-'+c[0]).addEventListener('input',function(ev){state[c[1]]=Number(ev.target.value); rendre();});
+  $('n-'+c[0]).addEventListener('input',function(ev){
+    var v=lireNombre(ev.target.value);
+    if(v===null||isNaN(v)||v<0) return;
+    state[c[1]]=Math.round(v); rendre();
+  });
+});
+
+/* ---------- Démarrage ---------- */
+document.querySelectorAll('.legend.zones').forEach(function(el){
+  el.innerHTML=ZONES.map(function(z){return '<span><span class="sw '+z.cls+'"></span>'+z.label+' : '+z.range+'</span>';}).join('');
+});
+brancherConf($('c-eng')); brancherConf($('c-fab')); brancherHistorique();
+if(!restaurer()) state.rows=lignesExemple();
+state.params=validerParams(state.params);
+rendreTable();
+calculer();
+var enAttente=false;
+if(window.ResizeObserver){
+  new ResizeObserver(function(){
+    if(enAttente) return;
+    enAttente=true;
+    requestAnimationFrame(function(){enAttente=false; rendre();});
+  }).observe($('c-eng'));
+}
+})();
+</script>

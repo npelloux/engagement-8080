@@ -1,0 +1,9 @@
+{
+  "name": "engagement-8080",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Estime combien de Features engager au prochain trimestre pour tenir une prédictibilité cible avec un niveau de confiance donné.",
+  "scripts": {
+    "test": "node --test"
+  }
+}
