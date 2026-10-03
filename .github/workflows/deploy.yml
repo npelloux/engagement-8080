@@ -32,6 +32,6 @@ jobs:
         with:
           server: ${{ secrets.SFTP_SERVER }}
           username: ${{ secrets.SFTP_USERNAME }}
-          password: ${{ secrets.SFTP_PASSWORD }}
+          password: ${{ secrets.SFTP_PASS }}
           port: 22
           uploads: ./dist/ => ./outils/engagement-8080/

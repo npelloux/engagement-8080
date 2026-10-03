@@ -23,7 +23,7 @@ export CSV ou JSON.
 Chaque push sur `main` lance les tests, puis dépose `index.html`, `moteur.js`
 et le logo dans `outils/engagement-8080/` sur l'hébergement web IONOS
 d'aelworks.fr (`.github/workflows/deploy.yml`). Le dépôt doit avoir les secrets
-`SFTP_SERVER`, `SFTP_USERNAME` et `SFTP_PASSWORD`.
+`SFTP_SERVER`, `SFTP_USERNAME` et `SFTP_PASS`.
 
 ## Structure
 
