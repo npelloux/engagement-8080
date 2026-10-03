@@ -1,0 +1,37 @@
+name: Déploiement aelworks.fr
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm test
+
+  deploy-ionos:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Préparer les fichiers publiés
+        run: |
+          mkdir -p dist
+          cp index.html moteur.js aelworks-logo.png dist/
+
+      # Publié sous aelworks.fr/outils/engagement-8080/ sur l'hébergement web IONOS.
+      - name: Déploiement IONOS par SFTP
+        uses: Dylan700/sftp-upload-action@latest
+        with:
+          server: ${{ secrets.SFTP_SERVER }}
+          username: ${{ secrets.SFTP_USERNAME }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          port: 22
+          uploads: ./dist/ => ./outils/engagement-8080/
