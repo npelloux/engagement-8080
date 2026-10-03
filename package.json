@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "license": "MIT",
-  "author": "AELWorks (http://aelworks.fr)",
-  "homepage": "https://npelloux.github.io/engagement-8080/",
+  "author": "AELWorks (https://aelworks.fr/)",
+  "homepage": "https://aelworks.fr/outils/engagement-8080/",
   "description": "Estime combien de Features engager au prochain trimestre pour tenir une prédictibilité cible avec un niveau de confiance donné.",
   "scripts": {
     "test": "node --test"

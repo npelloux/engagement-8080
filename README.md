@@ -8,15 +8,22 @@ prédictibilité cible (80 % par défaut) avec un niveau de confiance donné
 Le résultat est une estimation probabiliste fondée sur l'historique, jamais une
 garantie.
 
-Un outil open source d'[AELWorks](http://aelworks.fr).
+Un outil open source d'[AELWorks](https://aelworks.fr/).
 
 ## Utilisation
 
-En ligne : <https://npelloux.github.io/engagement-8080/>
+En ligne : <https://aelworks.fr/outils/engagement-8080/>
 
 En local : ouvrir `index.html` dans un navigateur. Aucune installation, aucun serveur :
 les données restent dans le stockage local du navigateur, avec import et
 export CSV ou JSON.
+
+## Déploiement
+
+Chaque push sur `main` lance les tests, puis dépose `index.html`, `moteur.js`
+et le logo dans `outils/engagement-8080/` sur l'hébergement web IONOS
+d'aelworks.fr (`.github/workflows/deploy.yml`). Le dépôt doit avoir les secrets
+`SFTP_SERVER`, `SFTP_USERNAME` et `SFTP_PASS`.
 
 ## Structure
 
@@ -40,4 +47,4 @@ Node 18 ou plus récent, sans dépendance.
 
 ## Licence
 
-[MIT](LICENSE) © 2026 [AELWorks](http://aelworks.fr)
+[MIT](LICENSE) © 2026 [AELWorks](https://aelworks.fr/)
